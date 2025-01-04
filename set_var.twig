@@ -1,0 +1,79 @@
+{# تعريف المتغيرات باستخدام theme.settings.set #}
+{# يتم استخدام هذه الطريقة لتحديد متغيرات عامة يمكن استدعاؤها في أي مكان في المشروع #}
+
+{# تعريف لون الخلفية والنصوص #}
+{{ theme.settings.set('main_text', c.main_text ) }}
+{{ theme.settings.set('sub_text', c.sub_text) }}
+{{ theme.settings.set('header_color', '#000') }}
+
+{# ملاحظات: #}
+{# 1. لازم تعرف المتغيرات باستخدام theme.settings.set الأول قبل ما تستدعيها بـ theme.settings.get. #}
+	{# 2. لما تستدعي المتغيرات، يفضل تضيف قيمة افتراضية عشان تتجنب أي مشاكل لو المتغير مش متعرف. #} 
+<section class="dynamic-section"><h1 style="background-color: {{ theme.settings.get('header_color', '#f85fff') }};">
+		{{ theme.settings.get('main_text') }}
+	</h1>
+	<button style="background-color: {{ theme.settings.get('header_color', '#ffffff') }};">
+		{{ theme.settings.get('sub_text', 'النص الافتراضي') }}
+	</button>
+</section>
+
+
+{# 1. نصوص (String) #}
+{{ theme.settings.set('welcome_message', 'أهلاً وسهلاً') }}
+<section>
+	<p>{{ theme.settings.get('welcome_message', 'مرحبا!') }}</p>
+</section>
+
+{# 2. أرقام (Integer/Float) #}
+{{ theme.settings.set('max_items', 10) }}
+<section>
+	<p>عدد العناصر المسموح بيها:
+		{{ theme.settings.get('max_items', 5) }}</p>
+</section>
+
+{# 3. بوليان (Boolean) #}
+{{ theme.settings.set('show_banner', true) }}
+<section>
+	{% if theme.settings.get('show_banner', false) %}
+		<div class="banner">الإعلان متاح</div>
+	{% else %}
+		<div class="banner">الإعلان مش متاح</div>
+	{% endif %}
+</section>
+
+{# 4. ألوان (Colors) #}
+{{ theme.settings.set('button_color', '#ffcc00') }}
+<section>
+	<button style="background-color: {{ theme.settings.get('button_color', '#333') }};">
+		اضغط هنا
+	</button>
+</section>
+
+{# 5. قوائم (Arrays) #}
+{{ theme.settings.set('menu_items', ['الرئيسية', 'الخدمات', 'اتصل بنا']) }}
+{{ variable|json_encode }}
+<section>
+	<ul>
+		{% for item in theme.settings.get('menu_items', ['الرئيسية']) %}
+			<li>{{ item }}</li>
+		{% endfor %}
+	</ul>
+</section>
+
+{# 1. دايماً خلي تعريف المتغيرات في مكان واضح فوق الكود. #}
+{# 2. لو في متغير جديد، عرفه واستخدم قيمة افتراضية أثناء الاستدعاء. #}
+{# 3. الهدف هو تسهيل التعديلات المستقبلية وإعادة استخدام الكود بسهولة. #}
+
+{# ***************************************************************************************************************** 
+*****************************************************************************************************************#}
+
+
+{% set c = component %}
+{# تسمية المتغير مرة واحدة clean code
+لما تستخدم {% set c = component %}، بتقلل تكرار كتابة component في الكود، وده بيخلي الكود أنضف وأسهل في القراءة.
+
+تحسين الأداء بسيط جداً:
+رغم إن الفرق في الأداء صغير جدًا لكن استخدام متغير مختصر بيقلل طول النص اللي بيتفسر أثناء تشغيل الكود، وده ممكن يبقى أفضل بشكل طفيف.
+
+سهولة التوسيع:
+لو فكرت تضيف متغيرات تانية مشتقة أو تستخدم متغيرات إضافية، التنظيم بالطريقة دي بيخلي الكود أوضح وأسهل في إدارته على المدى الطويل. #}
