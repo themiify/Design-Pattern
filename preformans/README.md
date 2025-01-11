@@ -335,6 +335,161 @@ HTML:
 
     x-bind:src: Binds the src attribute to the video URL only when isVisible is true.
 
+**Example 2: Dynamic List with Add/Remove Items**
+- Alpine.js
+
+```html copy
+    <div x-data="{ items: [], newItem: '' }">
+        <input type="text" x-model="newItem" placeholder="Add a new item">
+        <button @click="items.push(newItem); newItem = ''">Add</button>
+        <ul>
+            <template x-for="(item, index) in items" :key="index">
+                <li>
+                    <span x-text="item"></span>
+                    <button @click="items.splice(index, 1)">Remove</button>
+                </li>
+            </template>
+        </ul>
+    </div>
+ ```
+ - Vanilla JavaScript
+```html copy 
+    <div>
+        <input type="text" id="newItem" placeholder="Add a new item">
+        <button id="addItem">Add</button>
+        <ul id="itemList"></ul>
+    </div>
+
+    <script>
+        const newItemInput = document.getElementById('newItem');
+        const addItemButton = document.getElementById('addItem');
+        const itemList = document.getElementById('itemList');
+
+        addItemButton.addEventListener('click', () => {
+            const itemText = newItemInput.value.trim();
+            if (itemText) {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${itemText}</span>
+                    <button onclick="removeItem(this)">Remove</button>
+                `;
+                itemList.appendChild(li);
+                newItemInput.value = '';
+            }
+        });
+
+        function removeItem(button) {
+            const li = button.parentElement;
+            itemList.removeChild(li);
+        }
+    </script>
+```
+ **Example 3: Accordion Component**
+ - Alpine.js
+ ```html copy
+      <div x-data="{ openAccordion: null }">
+        <div class="accordion-item">
+            <div @click="openAccordion === 1 ? openAccordion = null : openAccordion = 1" class="accordion-header">
+                Accordion Item 1
+            </div>
+            <div x-show="openAccordion === 1" class="accordion-content">
+                Content for Accordion Item 1
+            </div>
+        </div>
+        <div class="accordion-item">
+            <div @click="openAccordion === 2 ? openAccordion = null : openAccordion = 2" class="accordion-header">
+                Accordion Item 2
+            </div>
+            <div x-show="openAccordion === 2" class="accordion-content">
+                Content for Accordion Item 2
+            </div>
+        </div>
+        <div class="accordion-item">
+            <div @click="openAccordion === 3 ? openAccordion = null : openAccordion = 3" class="accordion-header">
+                Accordion Item 3
+            </div>
+            <div x-show="openAccordion === 3" class="accordion-content">
+                Content for Accordion Item 3
+            </div>
+        </div>
+    </div>
+
+ ```
+ - Vanilla JavaScript
+```html copy
+    <div>
+        <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(1)">Accordion Item 1</div>
+            <div id="accordionContent1" class="accordion-content">Content for Accordion Item 1</div>
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(2)">Accordion Item 2</div>
+            <div id="accordionContent2" class="accordion-content">Content for Accordion Item 2</div>
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(3)">Accordion Item 3</div>
+            <div id="accordionContent3" class="accordion-content">Content for Accordion Item 3</div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAccordion(index) {
+            const content = document.getElementById(`accordionContent${index}`);
+            content.classList.toggle('open');
+        }
+    </script>
+
+```
+
+ **Example 4: Modal Component**
+ - Alpine
+ ```html copy 
+    <div x-data="{ isOpen: false }">
+        <button @click="isOpen = true">Open Modal</button>
+        <div x-show="isOpen" @click.away="isOpen = false" class="modal">
+            <div class="modal-content">
+                <p>This is a modal!</p>
+                <button @click="isOpen = false">Close</button>
+            </div>
+        </div>
+    </div>
+ ```
+ - Vanilla JavaScript
+```html copy
+    <div>
+        <button id="openModal">Open Modal</button>
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <p>This is a modal!</p>
+                <button id="closeModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const openModalButton = document.getElementById('openModal');
+        const closeModalButton = document.getElementById('closeModal');
+        const modal = document.getElementById('modal');
+
+        openModalButton.addEventListener('click', () => {
+            modal.classList.add('open');
+        });
+
+        closeModalButton.addEventListener('click', () => {
+            modal.classList.remove('open');
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.classList.remove('open');
+            }
+        });
+    </script>
+    ```
+
+
+
 **Performance Impact:**
 - Faster Initial Load: The video only loads when it’s about to enter the viewport, saving bandwidth.
 
