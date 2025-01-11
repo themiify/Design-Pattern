@@ -1,4 +1,4 @@
-  # Managing Variables in Twig Templates
+  # 1-Managing Variables in Twig Templates
   
   This document demonstrates how to use Twig to manage variables efficiently and dynamically within a project. Using `theme.settings.set` and `theme.settings.get`, you can define and access variables with ease.
   
@@ -91,3 +91,121 @@
   Using a short variable name like `c` reduces redundancy and improves readability. This approach also:
   - Minimizes the text parsed during runtime, offering a slight performance boost.
   - Simplifies expansion when adding derived or additional variables in the future.
+
+# 2-Template Inheritance
+Twig's template inheritance allows you to create a base template (layout) and extend it in child templates. This promotes code reuse and maintainability
+
+**Example:**
+```twig copy 
+{# base.twig #}
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>{% block title %}Default Title{% endblock %}</title>
+    </head>
+    <body>
+        <header>{% block header %}Header Content{% endblock %}</header>
+        <main>{% block content %}{% endblock %}</main>
+        <footer>{% block footer %}Footer Content{% endblock %}</footer>
+    </body>
+    </html>
+```
+``` twig copy 
+{# home.twig #}
+    {% extends 'base.twig' %}
+
+    {% block title %}Home Page{% endblock %}
+
+    {% block content %}
+        <h1>Welcome to the Home Page!</h1>
+    {% endblock %}
+```
+
+# 3-Modularization with Includes and Macros
+**Includes**
+
+Use {% include %} to modularize your templates and reuse components like headers, footers, or buttons.
+
+**Example:**
+``` twig copy
+{# header.twig #}
+    <header>
+        <h1>My Website</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+        </nav>
+    </header>
+```
+```twig copy 
+{# home.twig #}
+    {% extends 'base.twig' %}
+
+    {% block content %}
+        {% include 'header.twig' %}
+        <p>Welcome to the home page!</p>
+{% endblock %}
+```
+**Macros**
+
+Twig macros are reusable functions for templates. Use them for repetitive UI components like form inputs or buttons.
+
+**Example:**
+```twig copy
+{# macros.twig #}
+    {% macro input(name, value, type = 'text') %}
+        <input type="{{ type }}" name="{{ name }}" value="{{ value }}">
+    {% endmacro %}
+```
+```twig copy
+{# form.twig #}
+    {% import 'macros.twig' as macros %}
+
+    <form>
+        {{ macros.input('username', '', 'text') }}
+        {{ macros.input('password', '', 'password') }}
+    </form>
+```
+# 4-Control Structures and Filters
+Twig supports control structures like if, for, and set to handle logic in templates. Use filters to manipulate data directly in templates.
+
+**Example:**
+```twig copy
+    {% set users = ['Alice', 'Bob', 'Charlie'] %}
+
+    <ul>
+        {% for user in users %}
+            <li>{{ user }}</li>
+        {% endfor %}
+    </ul>
+
+    {% if users|length > 0 %}
+        <p>There are {{ users|length }} users.</p>
+    {% else %}
+        <p>No users found.</p>
+    {% endif %}
+```
+# 5-Debugging and Profiling
+Twig provides tools for debugging and profiling templates. Use {{ dump() }} to inspect variables during development.
+
+**Example:**
+```twig copy
+{{ dump(variable) }}
+```
+# 6-Organizing Templates
+Organize your templates into logical directories for better maintainability.
+
+**Example Structure:**
+``` copy
+templates/
+├── layouts/
+│   ├── base.twig
+│   ├── header.twig
+│   └── footer.twig
+├── components/
+│   ├── button.twig
+│   └── card.twig
+├── pages/
+│   ├── home.twig
+│   └── about.twig
+```
