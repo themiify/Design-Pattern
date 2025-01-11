@@ -108,6 +108,7 @@ PostCSS is a tool for transforming CSS with JavaScript plugins. It allows you to
    - Minify CSS for production.
    - Use future CSS features today.
    - Remove unused CSS (with PurgeCSS).
+   
 **What is PurgeCSS?**
 
 PurgeCSS is a tool that removes unused CSS from your stylesheets. It analyzes your HTML, JavaScript, and other files to determine which CSS classes are actually being used.
