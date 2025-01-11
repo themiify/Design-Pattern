@@ -295,6 +295,18 @@ npm install -g @salla.sa/cli
 ``` html copy
 <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
 ```
+**Performance Impact:**
+- Faster Initial Load: The video only loads when it’s about to enter the viewport, saving bandwidth.
+
+- Simpler Code: Alpine.js reduces the need for custom JavaScript, making the code easier to maintain
+
+## **Tools for Monitoring Performance**
+**Google Lighthouse:**
+Use Lighthouse to audit your theme’s performance, accessibility, and SEO. It’s available in Chrome DevTools or as a standalone tool.
+
+**WebPageTest:**
+Test your theme’s performance from different locations and devices using [WebPageTest](https://www.webpagetest.org/).
+
 
 ## **Using Alpine.js for Interactivity**
 
@@ -455,7 +467,7 @@ HTML:
     </div>
  ```
  - Vanilla JavaScript
-```html copy
+``` html copy
     <div>
         <button id="openModal">Open Modal</button>
         <div id="modal" class="modal">
@@ -487,18 +499,4 @@ HTML:
         });
     </script>
     ```
-
-
-
-**Performance Impact:**
-- Faster Initial Load: The video only loads when it’s about to enter the viewport, saving bandwidth.
-
-- Simpler Code: Alpine.js reduces the need for custom JavaScript, making the code easier to maintain
-
-## **Tools for Monitoring Performance**
-**Google Lighthouse:**
-Use Lighthouse to audit your theme’s performance, accessibility, and SEO. It’s available in Chrome DevTools or as a standalone tool.
-
-**WebPageTest:**
-Test your theme’s performance from different locations and devices using [WebPageTest](https://www.webpagetest.org/).
 
