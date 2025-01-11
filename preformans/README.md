@@ -34,10 +34,15 @@ This document explains the best practices for optimizing the performance of imag
    - [Caching Strategies](#caching-strategies)
    - [Content Delivery Networks (CDNs)](#content-delivery-networks-cdns)
    - [Preloading Key Resources](#preloading-key-resources)
-8. [Tools for Monitoring Performance](#tools-for-monitoring-performance)
+8. [Using Alpine.js for Interactivity](#using-alpinejs-for-interactivity)
+   - [What is Alpine.js?](#what-is-alpinejs)
+   - [Why Use Alpine.js?](#why-use-alpinejs)
+   - [Example: Lazy-Loading Videos with Alpine.js](#example-lazy-loading-videos-with-alpinejs)
+9. [Tools for Monitoring Performance](#tools-for-monitoring-performance)
    - [Google Lighthouse](#google-lighthouse)
    - [WebPageTest](#webpagetest)
    - [Salla Analytics](#salla-analytics)
+
 
 ---
 
@@ -290,6 +295,51 @@ npm install -g @salla.sa/cli
 ``` html copy
 <link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin>
 ```
+
+## **Using Alpine.js for Interactivity**
+
+**What is Alpine.js?**
+
+Alpine.js is a lightweight JavaScript framework that allows you to add interactivity to your web pages without the complexity of larger frameworks like React or Vue. It’s perfect for enhancing performance while keeping your code simple and maintainable.
+
+**Why Use Alpine.js?**
+- Lightweight: Alpine.js is only ~10KB, making it much smaller than other frameworks.
+- Declarative Syntax: It uses HTML attributes to define behavior, making it easy to read and write.
+- No Build Step: Alpine.js works directly in the browser, so there’s no need for a build process.
+**Example: Lazy-Loading Videos with Alpine.js**
+
+Here’s how you can replace vannela  JavaScript with Alpine.js to lazy-load videos:
+
+HTML:
+``` html copy
+<div x-data="{ isVisible: false }" x-intersect="isVisible = true">
+  <video
+    x-bind:src="isVisible ? 'https://example.com/video.mp4' : ''"
+    controls
+    playsinline
+    preload="metadata"
+    poster="thumbnail.jpg"
+    width="100%"
+    loading="lazy"
+    muted
+  >
+    Your browser does not support the video tag.
+  </video>
+</div>
+```
+**Explanation:**
+
+    x-data: Initializes Alpine.js and defines a reactive property isVisible.
+
+    x-intersect: Triggers when the element enters the viewport, setting isVisible to true.
+
+    x-bind:src: Binds the src attribute to the video URL only when isVisible is true.
+
+**Performance Impact:**
+- Faster Initial Load: The video only loads when it’s about to enter the viewport, saving bandwidth.
+
+- Simpler Code: Alpine.js reduces the need for custom JavaScript, making the code easier to maintain
+
 ## **Tools for Monitoring Performance**
 **Google Lighthouse:**
 Use Lighthouse to audit your theme’s performance, accessibility, and SEO. It’s available in Chrome DevTools or as a standalone tool.
