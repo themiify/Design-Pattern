@@ -209,3 +209,10 @@ templates/
 │   ├── home.twig
 │   └── about.twig
 ```
+# 7-Continuous Learning
+Encourage the team to explore Twig's official documentation and experiment with advanced features.
+
+**Resources:**
+- [Twig Documentation](https://twig.symfony.com/doc/)
+- [Twig Extensions](https://github.com/twigphp/Twig-extensions)
+- [Twig Best Practices](https://symfony.com/doc/current/best_practices.html#templates)
