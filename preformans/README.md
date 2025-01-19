@@ -318,6 +318,265 @@ Alpine.js is a lightweight JavaScript framework that allows you to add interacti
 - Lightweight: Alpine.js is only ~10KB, making it much smaller than other frameworks.
 - Declarative Syntax: It uses HTML attributes to define behavior, making it easy to read and write.
 - No Build Step: Alpine.js works directly in the browser, so there’s no need for a build process.
+
+# Alpine-Perfomance
+
+### Improved Performance of Category Component
+
+#### Original Issue
+The `Category Component` component was experiencing significant performance bottlenecks due to excessive DOM manipulation and rendering a large dataset without optimization. This caused the component to load in **1.96 seconds**, negatively impacting user experience.
+
+#### Actions Taken
+- use alpineJs framework instead of twig
+- remove all javascript code and depend on alpineJs
+
+#### Results
+- The load time for the component decreased to **0.24 seconds**, achieving a **88% improvement in performance in component** and **33%** for body.
+
+| Metric                | Before Optimization | After Optimization |
+|-----------------------|---------------------|--------------------|
+| Load Time ( seconds )   | 1.96ms                 | 24ms              |
+
+#### Visuals
+- **Before Optimization:** for this section only
+  ![Before Optimization Screenshot](https://i.postimg.cc/fR2sMD5D/image.png)
+- **After Optimization:**
+  ![After Optimization Screenshot](https://i.postimg.cc/gkq91QrJ/image.png)
+- **Performance Comparison Chart:** for all body 
+  ![Performance Chart](https://i.postimg.cc/FzGPWFFz/image.png)
+
+#### Challenges and Learnings
+This optimization process emphasized the importance of **analyzing rendering processes** and using modern tools like **AlpineJs**. It also highlighted areas for further optimization in other components.
+** code with javascript :**
+``` html copy 
+   <section class="categories__swiper__sportify">
+	<div class="container-fluid d-flex flex-column flex-lg-row">
+		<div class="categories__container_sportify">
+			{% if settings.video_link %}
+				<video autoplay muted loop playsinline width="100%" height="100%">
+					<source src="{{ settings.video_link }}">
+				</video>
+			{% else %}
+				<div class="product__list__sportify d-flex">
+					<div class="image">
+						<img class="d-none d-lg-flex img-fluid" src="" alt="Background Image" width="100%" height="100%" loading="lazy">
+					</div>
+					{% for item in settings.categories_slider %}
+						<div class="product__item__sportify {{ loop.index == 3 ? 'active' }} tab {{ loop.index == 1 ? 'tab_active' }}" data-tab="{{ item.categories.name }}">
+							<img class="d-flex d-lg-none img-fluid" src="{{ item.categories.image }}" alt="" width="100%" height="100%" loading="lazy">
+							<div class="product__item__content__sportify {{ settings.text_center ? 'center_text' }}">
+								<h3 data-image="{{ item.categories.image }}">
+									{{ item.categories.name }}
+								</h3>
+								<span class="pieces__count__sportify mb-4 d-block">
+									{{ item.category_count }}
+									{{ locals.pieces }}</span>
+								{% if settings.button %}
+									<span class="d-flex align-items-center btn as_button">
+										<a type="button" href="{{ item.categories.url }}" class="d-flex">
+											{{ locals.shop_now }}
+										</a>
+									</span>
+								{% else %}
+									<a href="{{ item.categories.url }}" class="d-flex">
+										{{ locals.shop_now }}
+									</a>
+								{% endif %}
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+		</div>
+		<div class="product__container_sportify">
+			<div class="product__text mb-5">
+				<h3>{{ settings.section_title }}</h3>
+				<p>{{ settings.sub_title }}</p>
+			</div>
+			<div class="product__container_swiper">
+				<div class="swiper-wrapper">
+					{% for item in settings.categories_slider %}
+						{% for prod in item.product.products %}
+							<div class="swiper-slide {{ loop.index == 1 ? 'tab_active' }} tab_content" id="{{ item.categories.name }}">
+								<div class="prod-col">
+									{% include 'product-card.twig' with {'product' : prod, 'index': key} %}
+								</div>
+							</div>
+						{% endfor %}
+					{% endfor %}
+				</div>
+				{% if settings.swiper_buttons %}
+					<div class="swiper-button-prev {{ settings.swiper_radius_buttons ? 'radius' }}"></div>
+					<div class="swiper-button-next {{ settings.swiper_radius_buttons ? 'radius' }}"></div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</section>
+   
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const categoryImages = document.querySelectorAll(".product__item__sportify h3");
+		const mainImage = document.querySelector(".product__list__sportify .image img");
+		const productItems = document.querySelectorAll(".product__list__sportify .product__item__sportify");
+		const tabs = document.querySelectorAll(".tab");
+		const tabContents = document.querySelectorAll(".tab_content");
+
+		const defaultImage = categoryImages[2]?.dataset.image || "";
+		if (mainImage) mainImage.src = defaultImage;
+
+		const updateImageWithFade = (src) => {
+			if (mainImage && src && src !== mainImage.src) {
+				mainImage.style.opacity = 0;
+				setTimeout(() => {
+					mainImage.src = src;
+					requestAnimationFrame(() => {
+						mainImage.style.opacity = 1;
+					});
+				}, 300);
+			}
+		};
+
+		productItems.forEach((item) => {
+			const itemImage = item.querySelector("h3")?.dataset.image;
+
+			item.addEventListener("mouseenter", () => {
+				const itemData = item.dataset.tab;
+
+				const swiperSlides = document.querySelectorAll(".swiper-slide.tab_content");
+				const swiperWrapper = document.querySelector(".product__container_swiper .swiper-wrapper");
+
+				swiperSlides.forEach((slide) => {
+					if (itemData === slide.id) {
+						slide.classList.add("tab_active");
+						swiperWrapper.style.transform = "translate3d(0, 0px, 0px)";
+					} else {
+						slide.classList.remove("tab_active");
+					}
+				});
+
+				productItems.forEach((e) => e.classList.remove("active"));
+				item.classList.add("active");
+
+				if (itemImage) updateImageWithFade(itemImage);
+			});
+		});
+
+		tabs.forEach((tab) => {
+			tab.addEventListener("click", () => {
+				tabs.forEach((t) => t.classList.remove("tab_active"));
+				tabContents.forEach((content) => content.classList.remove("tab_active"));
+
+				tab.classList.add("tab_active");
+				const targetContent = document.getElementById(tab.getAttribute("data-tab"));
+				if (targetContent) targetContent.classList.add("tab_active");
+			});
+		});
+	});
+</script>
+```
+** code after using alpine js :**
+``` html copy 
+   <section class="categories__swiper__sportify" x-data='{
+			settings: {
+					videoLink: "{{ settings.video_link }}",
+					sectionName: "{{ settings.section_title }}",
+					subTitle: "{{ settings.sub_title }}",
+					"button": "{{ settings.button }}",
+					"swiperButtons": "{{ settings.swiper_buttons }}",
+					"swiperRadiusButtons": "{{ settings.swiper_radius_buttons }}"
+			},
+			categories: {{ settings.categories_slider | json_encode | raw }},
+			activeImage: "",
+			activeTab: "",
+			init() {
+				if ( this.categories.length > 0 ) {
+						this.activeTab = this.categories[2].categories.name;
+						this.activeImage = this.categories[2].categories.image;
+				}
+			},
+			resetSwiper() {
+				const swiperWrapper = document.querySelector(".categories__swiper__sportify .swiper-wrapper");
+				swiperWrapper.style.transform = "translate3d(0px, 0px, 0px)";
+			},
+			relateProduct: "activeTab",
+			relateProductFun(e) {
+				if ( e.id == relateProduct ) {
+					e.classList.add("tab_active");
+				} else {
+					e.classList.remove("tab_active");
+				}
+			},
+			updateImage(image) {
+				if (this.activeImage !== image) {
+					this.activeImage = image;
+				}
+			},
+			activateTab(tabName) {
+				this.activeTab = tabName;
+			}
+		}'>
+	<div class="container-fluid d-flex flex-column flex-lg-row">
+		<div class="categories__container_sportify">
+			<template x-if="settings.videoLink">
+				<video autoplay muted loop playsinline width="100%" height="100%">
+					<source :src="settings.videoLink">
+				</video>
+			</template>
+			<template x-if="!settings.videoLink">
+				<div class="product__list__sportify d-flex">
+					<div class="image">
+						<img class="d-none d-lg-flex img-fluid" :src="activeImage || (categories[2]?.categories.image || '')" alt="Background Image" width="100%" height="100%" loading="lazy"/>
+					</div>
+					<template x-for="(item, index) in categories" :key="index">
+						<div class="product__item__sportify" :class="{'active': activeTab === item.categories.name}" @mouseenter="updateImage(item.categories.image); activateTab(item.categories.name); resetSwiper();" x-data="{ image: item.categories.image }">
+							<img class="d-flex d-lg-none img-fluid" :src="item.categories.image" alt="" width="100%" height="100%" loading="lazy">
+							<div class="product__item__content__sportify" x-data="{ catName: item.categories.name, text: '{{ locals.shop_now }}' }">
+								<h3 :data-image="image" x-text="catName"></h3>
+								<span class="pieces__count__sportify mb-4 d-block" x-text="`${item.category_count} {{ locals.pieces }}`"></span>
+								<template x-if="settings.button">
+									<span class="d-flex align-items-center btn as_button" x-data="{ link: item.categories.url }">
+										<a type="button" :href="link" class="d-flex" x-text="text"></a>
+									</span>
+								</template>
+								<template x-if="!settings.button">
+									<a :href="item.categories.url" class="d-flex" x-text="text"></a>
+								</template>
+							</div>
+						</div>
+					</template>
+				</div>
+			</template>
+		</div>
+		<div class="product__container_sportify">
+			<div class="product__text mb-5">
+				<h3 x-text="settings.sectionName"></h3>
+				<p x-text="settings.subTitle"></p>
+			</div>
+			<div class="product__container_swiper">
+				<div class="swiper-wrapper">
+					{% for item in settings.categories_slider %}
+						{% for prod in item.product.products %}
+							<div class="swiper-slide tab_content" :class="{ 'tab_active': activeTab === $el.id }" id="{{ item.categories.name }}">
+								<div class="prod-col">
+									{% include 'product-card.twig' with { 'product': prod } %}
+								</div>
+							</div>
+						{% endfor %}
+					{% endfor %}
+				</div>
+				<template x-if="settings.swiper_buttons">
+					<div>
+						<div class="swiper-button-prev" :class="{'radius': settings.swiper_radius_buttons}"></div>
+						<div class="swiper-button-next" :class="{'radius': settings.swiper_radius_buttons}"></div>
+					</div>
+				</template>
+			</div>
+		</div>
+	</div>
+</section>
+```
+
 **Example: Lazy-Loading Videos with Alpine.js**
 
 Here’s how you can replace vannela  JavaScript with Alpine.js to lazy-load videos:
@@ -499,4 +758,5 @@ HTML:
         });
     </script>
     ```
+
 
